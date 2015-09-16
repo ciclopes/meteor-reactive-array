@@ -1,88 +1,86 @@
-# Array methods that are not modifiers (do not modify the array itself).
-METHODS = 'concat join slice toString toLocaleString indexOf lastIndexOf forEach entries every some filter map reduce reduceRight'.split ' '
+class ReactiveArray
+  # Array mutator methods.
+  MUTATOR_METHODS = 'pop push reverse shift sort splice unshift'.split ' '
+  # Array methods that are not mutators (do not modify the array itself).
+  ACCESSOR_METHODS = 'concat join slice toLocaleString indexOf lastIndexOf'.split ' '
+  ITERATION_METHODS = 'forEach every some filter map reduce reduceRight'.split ' '
+  REACTIVE_METHODS = MUTATOR_METHODS.concat ACCESSOR_METHODS
 
-# Array prototype.
-ARRAY_PROTO = Array.prototype
+  __assignReactiveMethods = ->
+    self = @
 
-# Function to override the array modifiers methods to be reactive if desired (see Constructor).
-__assignReactiveModifiers = (array) ->
-  self = @
-  array.pop = ->
-    ReactiveArray.prototype.pop.apply self, arguments
-  array.push = ->
-    ReactiveArray.prototype.push.apply self, arguments
-  array.shift = ->
-    ReactiveArray.prototype.shift.apply self, arguments
-  array.splice = ->
-    ReactiveArray.prototype.splice.apply self, arguments
-  array.unshift = ->
-    ReactiveArray.prototype.unshift.apply self, arguments
-
-# Constructor.
-ReactiveArray = (initValue, equalsFn, makeArrayObjReactive) ->
-  # If the constructor has not been called with the keyword 'new', create a new instance and return it.
-  if not (@ instanceof ReactiveArray) then return new ReactiveArray initValue, equalsFn, makeArrayObjReactive
-  
-  # Ommited 'equalsFn' argument.
-  if not (equalsFn instanceof Function)
-    makeArrayObjReactive = equalsFn
-    equalsFn = undefined
-
-  # Set instance specific variables.
-  @_data = undefined
-  @_equalsFn = equalsFn
-  @_dep = new Tracker.Dependency
-  @_reactive_data_array = makeArrayObjReactive || true
-
-  # Set initial value.
-  if (typeof initValue != 'undefined') then @set initValue else @set []
-  return
-
-# Class' set function.
-ReactiveArray.prototype.set = (value) ->
-  # Uses the 'equalsFn' function as comparator if it has been defined upon construction.
-  # If the values are equal the variable is not updated.
-  if @_equalsFn and @_equalsFn @_data, value
+    for method in REACTIVE_METHODS
+      if Array::[method] instanceof Function then ((method_name) ->
+        self.array[method_name] = ->
+          ReactiveArray::[method_name].apply self, arguments
+      )(method)
     return
 
-  if value instanceof Array then @_data = value else @_data = [value]
+  constructor: (initValue, comparator, makeArrayObjReactive) ->
+    # If the constructor has not been called with the keyword 'new', create a new instance and return it.
+    if not (@ instanceof ReactiveArray) then return new ReactiveArray initValue, comparator, makeArrayObjReactive
+    
+    # Ommited 'comparator' argument.
+    if not (comparator instanceof Function)
+      makeArrayObjReactive = comparator
+      comparator = undefined
 
-  # Override the array's modifiers functions to be reactive (default behaviour) if desired upon construction.
-  if @_reactive_data_array then __assignReactiveModifiers.call @, @_data
-  @_dep.changed()
-  return
+    # Set instance specific variables.
+    @array = undefined
+    @comparator = comparator
+    @__dep = new Tracker.Dependency
+    @__reactive_array = makeArrayObjReactive || true
 
-# Class' get function.
-ReactiveArray.prototype.get = ->
-  if Tracker.active then @_dep.depend()
-  return @_data
+    # Set initial value.
+    if initValue is not undefined then @set initValue else @set []
+    return
 
-# Array's reactive modifiers functions overrides.
-ReactiveArray.prototype.pop = ->
-  @_dep.changed()
-  ARRAY_PROTO.pop.apply @_data, arguments
+  # Set function.
+  set: (value) ->
+    # Uses the 'comparator' if it has been defined upon construction.
+    # If the values are equal the variable is not updated.
+    if @comparator and @comparator @array, value
+      return
 
-ReactiveArray.prototype.push = ->
-  @_dep.changed()
-  ARRAY_PROTO.push.apply @_data, arguments
+    if value instanceof Array then @array = value else @array = [value]
 
-ReactiveArray.prototype.shift = ->
-  @_dep.changed()
-  ARRAY_PROTO.shift.apply @_data, arguments
+    # Override the array's modifiers functions to be reactive (default behaviour) if desired upon construction.
+    if @__reactive_array then __assignReactiveMethods.call @
+    @__dep.changed()
+    return
 
-ReactiveArray.prototype.splice = ->
-  @_dep.changed()
-  ARRAY_PROTO.splice.apply @_data, arguments
+  # Get function.
+  get: ->
+    @__dep.depend()
+    return @array
 
-ReactiveArray.prototype.unshift = ->
-  @_dep.changed()
-  ARRAY_PROTO.unshift.apply @_data, arguments
-# End.
+  clear: ->
+    @__dep.changed()
+    @set []
 
-ReactiveArray.prototype.toString = ->
-  return "ReactiveArray{ #{@get()} }"
+  toString: ->
+    @__dep.depend()
+    return "ReactiveArray{ #{@array} }"
 
-# Make the other non-modifiers array methods available.
-for a in METHODS
-  if ARRAY_PROTO[a] instanceof Function then ReactiveArray.prototype[a] = ->
-    ARRAY_PROTO[a].apply @_data, arguments
+  # Make the array mutator methods available and reactive.
+  for method in MUTATOR_METHODS
+    if Array::[method] instanceof Function then ((method_name) ->
+      ReactiveArray::[method_name] = ->
+        @__dep.changed()
+        Array::[method_name].apply @array, arguments
+    )(method)
+
+  # Make the array accessor methods available and reactive.
+  for method in ACCESSOR_METHODS
+    if Array::[method] instanceof Function then ((method_name) ->
+      ReactiveArray::[method_name] = ->
+        @__dep.depend()
+        Array::[method_name].apply @array, arguments
+    )(method)
+
+  # Make the array iteration methods available.
+  for method in ITERATION_METHODS
+    if Array::[method] instanceof Function then ((method_name) ->
+      ReactiveArray::[method_name] = ->
+        Array::[method_name].apply @array, arguments
+    )(method)
