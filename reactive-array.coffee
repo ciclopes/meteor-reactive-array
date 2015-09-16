@@ -1,12 +1,12 @@
 class ReactiveArray
   # Array mutator methods.
   MUTATOR_METHODS = 'pop push reverse shift sort splice unshift'.split ' '
-  # Array methods that are not mutators (do not modify the array itself).
+  # Array non-mutator methods (do not modify the array itself).
   ACCESSOR_METHODS = 'concat join slice toLocaleString indexOf lastIndexOf'.split ' '
   ITERATION_METHODS = 'forEach every some filter map reduce reduceRight'.split ' '
   REACTIVE_METHODS = MUTATOR_METHODS.concat ACCESSOR_METHODS
 
-  # Override the array's mutator and accessor methods to be reactive.
+  # Overrides the array's mutator and accessor methods to be reactive.
   __assignReactiveMethods = ->
     self = @
 
@@ -33,7 +33,7 @@ class ReactiveArray
     @__reactive_array = makeArrayObjReactive || true
 
     # Set initial value.
-    if initValue is not undefined then @set initValue else @set []
+    @set initValue
     return
 
   # Set function.
@@ -54,22 +54,38 @@ class ReactiveArray
     @__dep.depend()
     return @array
 
+  # Removes items from the array based either on a value or an evaluation function and returns a Javascript array containing the removed items or null if no items have been removed.
+  remove: (valueOrFn) ->
+    ret = []
+    fn = if valueOrFn instanceof Function then valueOrFn else (value) -> value is valueOrFn
+    i = @array.length
+
+    while i--
+      if fn @array[i]
+        ret.unshift @array[i]
+        @array.splice i, 1
+
+    if ret.length then ret else null
+
+  # Clear function.
   clear: ->
     @set []
 
+  # ToString function.
   toString: ->
     @__dep.depend()
     return "ReactiveArray{ #{@array} }"
 
-  # Make the array mutator methods available and reactive.
+  # Makes the array mutator methods available and reactive.
   for method in MUTATOR_METHODS
     if Array::[method] instanceof Function then ((method_name) ->
       ReactiveArray::[method_name] = ->
+        ret = Array::[method_name].apply @array, arguments
         @__dep.changed()
-        Array::[method_name].apply @array, arguments
+        ret
     )(method)
 
-  # Make the array accessor methods available and reactive.
+  # Makes the array accessor methods available and reactive.
   for method in ACCESSOR_METHODS
     if Array::[method] instanceof Function then ((method_name) ->
       ReactiveArray::[method_name] = ->
@@ -77,7 +93,7 @@ class ReactiveArray
         Array::[method_name].apply @array, arguments
     )(method)
 
-  # Make the array iteration methods available.
+  # Makes the array iteration methods available.
   for method in ITERATION_METHODS
     if Array::[method] instanceof Function then ((method_name) ->
       ReactiveArray::[method_name] = ->

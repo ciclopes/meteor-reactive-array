@@ -1,5 +1,5 @@
 ReactiveArray = (function() {
-  var ACCESSOR_METHODS, ITERATION_METHODS, MUTATOR_METHODS, REACTIVE_METHODS, __assignReactiveMethods, i, j, k, len, len1, len2, method;
+  var ACCESSOR_METHODS, ITERATION_METHODS, MUTATOR_METHODS, REACTIVE_METHODS, __assignReactiveMethods, j, k, l, len, len1, len2, method;
 
   MUTATOR_METHODS = 'pop push reverse shift sort splice unshift'.split(' ');
 
@@ -10,10 +10,10 @@ ReactiveArray = (function() {
   REACTIVE_METHODS = MUTATOR_METHODS.concat(ACCESSOR_METHODS);
 
   __assignReactiveMethods = function() {
-    var i, len, method, self;
+    var j, len, method, self;
     self = this;
-    for (i = 0, len = REACTIVE_METHODS.length; i < len; i++) {
-      method = REACTIVE_METHODS[i];
+    for (j = 0, len = REACTIVE_METHODS.length; j < len; j++) {
+      method = REACTIVE_METHODS[j];
       if (Array.prototype[method] instanceof Function) {
         (function(method_name) {
           return self.array[method_name] = function() {
@@ -36,11 +36,7 @@ ReactiveArray = (function() {
     this.comparator = comparator;
     this.__dep = new Tracker.Dependency;
     this.__reactive_array = makeArrayObjReactive || true;
-    if (initValue === !void 0) {
-      this.set(initValue);
-    } else {
-      this.set([]);
-    }
+    this.set(initValue);
     return;
   }
 
@@ -64,6 +60,26 @@ ReactiveArray = (function() {
     return this.array;
   };
 
+  ReactiveArray.prototype.remove = function(valueOrFn) {
+    var fn, i, ret;
+    ret = [];
+    fn = valueOrFn instanceof Function ? valueOrFn : function(value) {
+      return value === valueOrFn;
+    };
+    i = this.array.length;
+    while (i--) {
+      if (fn(this.array[i])) {
+        ret.unshift(this.array[i]);
+        this.array.splice(i, 1);
+      }
+    }
+    if (ret.length) {
+      return ret;
+    } else {
+      return null;
+    }
+  };
+
   ReactiveArray.prototype.clear = function() {
     return this.set([]);
   };
@@ -73,20 +89,22 @@ ReactiveArray = (function() {
     return "ReactiveArray{ " + this.array + " }";
   };
 
-  for (i = 0, len = MUTATOR_METHODS.length; i < len; i++) {
-    method = MUTATOR_METHODS[i];
+  for (j = 0, len = MUTATOR_METHODS.length; j < len; j++) {
+    method = MUTATOR_METHODS[j];
     if (Array.prototype[method] instanceof Function) {
       (function(method_name) {
         return ReactiveArray.prototype[method_name] = function() {
+          var ret;
+          ret = Array.prototype[method_name].apply(this.array, arguments);
           this.__dep.changed();
-          return Array.prototype[method_name].apply(this.array, arguments);
+          return ret;
         };
       })(method);
     }
   }
 
-  for (j = 0, len1 = ACCESSOR_METHODS.length; j < len1; j++) {
-    method = ACCESSOR_METHODS[j];
+  for (k = 0, len1 = ACCESSOR_METHODS.length; k < len1; k++) {
+    method = ACCESSOR_METHODS[k];
     if (Array.prototype[method] instanceof Function) {
       (function(method_name) {
         return ReactiveArray.prototype[method_name] = function() {
@@ -97,8 +115,8 @@ ReactiveArray = (function() {
     }
   }
 
-  for (k = 0, len2 = ITERATION_METHODS.length; k < len2; k++) {
-    method = ITERATION_METHODS[k];
+  for (l = 0, len2 = ITERATION_METHODS.length; l < len2; l++) {
+    method = ITERATION_METHODS[l];
     if (Array.prototype[method] instanceof Function) {
       (function(method_name) {
         return ReactiveArray.prototype[method_name] = function() {
