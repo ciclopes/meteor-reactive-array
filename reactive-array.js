@@ -1,19 +1,41 @@
+//********************************************************************************//
+// The MIT License (MIT)                                                          //
+//                                                                                //
+// Copyright (c) 2015 Antônio Augusto Morais                                      //
+//                                                                                //
+// Permission is hereby granted, free of charge, to any person obtaining a copy   //
+// of this software and associated documentation files (the "Software"), to deal  //
+// in the Software without restriction, including without limitation the rights   //
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell      //
+// copies of the Software, and to permit persons to whom the Software is          //
+// furnished to do so, subject to the following conditions:                       //
+//                                                                                //
+// The above copyright notice and this permission notice shall be included in all //
+// copies or substantial portions of the Software.                                //
+//                                                                                //
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR     //
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,       //
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE    //
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER         //
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,  //
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE  //
+// SOFTWARE.                                                                      //
+//********************************************************************************//
+
 ReactiveArray = (function() {
-  var ACCESSOR_METHODS, ITERATION_METHODS, MUTATOR_METHODS, REACTIVE_METHODS, __assignReactiveMethods, j, k, l, len, len1, len2, method;
+  var ALL_METHODS, MUTATOR_METHODS, OTHER_METHODS, __assignReactiveMethods, j, k, len, len1, method;
 
   MUTATOR_METHODS = 'pop push reverse shift sort splice unshift'.split(' ');
 
-  ACCESSOR_METHODS = 'concat join slice toLocaleString indexOf lastIndexOf'.split(' ');
+  OTHER_METHODS = 'concat join slice toLocaleString indexOf lastIndexOf forEach every some filter map reduce reduceRight'.split(' ');
 
-  ITERATION_METHODS = 'forEach every some filter map reduce reduceRight'.split(' ');
-
-  REACTIVE_METHODS = MUTATOR_METHODS.concat(ACCESSOR_METHODS);
+  ALL_METHODS = MUTATOR_METHODS.concat(OTHER_METHODS);
 
   __assignReactiveMethods = function() {
     var j, len, method, self;
     self = this;
-    for (j = 0, len = REACTIVE_METHODS.length; j < len; j++) {
-      method = REACTIVE_METHODS[j];
+    for (j = 0, len = ALL_METHODS.length; j < len; j++) {
+      method = ALL_METHODS[j];
       if (Array.prototype[method] instanceof Function) {
         (function(method_name) {
           return self.array[method_name] = function() {
@@ -103,23 +125,12 @@ ReactiveArray = (function() {
     }
   }
 
-  for (k = 0, len1 = ACCESSOR_METHODS.length; k < len1; k++) {
-    method = ACCESSOR_METHODS[k];
+  for (k = 0, len1 = OTHER_METHODS.length; k < len1; k++) {
+    method = OTHER_METHODS[k];
     if (Array.prototype[method] instanceof Function) {
       (function(method_name) {
         return ReactiveArray.prototype[method_name] = function() {
           this.__dep.depend();
-          return Array.prototype[method_name].apply(this.array, arguments);
-        };
-      })(method);
-    }
-  }
-
-  for (l = 0, len2 = ITERATION_METHODS.length; l < len2; l++) {
-    method = ITERATION_METHODS[l];
-    if (Array.prototype[method] instanceof Function) {
-      (function(method_name) {
-        return ReactiveArray.prototype[method_name] = function() {
           return Array.prototype[method_name].apply(this.array, arguments);
         };
       })(method);

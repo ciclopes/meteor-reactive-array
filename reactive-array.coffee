@@ -1,16 +1,39 @@
+##################################################################################
+# The MIT License (MIT)                                                          #
+#                                                                                #
+# Copyright (c) 2015 Antônio Augusto Morais                                      #
+#                                                                                #
+# Permission is hereby granted, free of charge, to any person obtaining a copy   #
+# of this software and associated documentation files (the "Software"), to deal  #
+# in the Software without restriction, including without limitation the rights   #
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell      #
+# copies of the Software, and to permit persons to whom the Software is          #
+# furnished to do so, subject to the following conditions:                       #
+#                                                                                #
+# The above copyright notice and this permission notice shall be included in all #
+# copies or substantial portions of the Software.                                #
+#                                                                                #
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR     #
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,       #
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE    #
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER         #
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,  #
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE  #
+# SOFTWARE.                                                                      #
+##################################################################################
+
 class ReactiveArray
   # Array mutator methods.
   MUTATOR_METHODS = 'pop push reverse shift sort splice unshift'.split ' '
-  # Array non-mutator methods (do not modify the array itself).
-  ACCESSOR_METHODS = 'concat join slice toLocaleString indexOf lastIndexOf'.split ' '
-  ITERATION_METHODS = 'forEach every some filter map reduce reduceRight'.split ' '
-  REACTIVE_METHODS = MUTATOR_METHODS.concat ACCESSOR_METHODS
+  # Array non-mutator methods.
+  OTHER_METHODS = 'concat join slice toLocaleString indexOf lastIndexOf forEach every some filter map reduce reduceRight'.split ' '
+  ALL_METHODS = MUTATOR_METHODS.concat OTHER_METHODS
 
-  # Overrides the array's mutator and accessor methods to be reactive.
+  # Overrides the array's methods to be reactive.
   __assignReactiveMethods = ->
     self = @
 
-    for method in REACTIVE_METHODS
+    for method in ALL_METHODS
       if Array::[method] instanceof Function then ((method_name) ->
         self.array[method_name] = ->
           ReactiveArray::[method_name].apply self, arguments
@@ -44,7 +67,7 @@ class ReactiveArray
 
     if value instanceof Array then @array = value else @array = [value]
 
-    # Override the array's mutator and accessor methods to be reactive if desired upon construction (default behaviour).
+    # Override the array's methods to be reactive if desired upon construction (default behaviour).
     if @__reactive_array then __assignReactiveMethods.call @
     @__dep.changed()
     return
@@ -54,7 +77,7 @@ class ReactiveArray
     @__dep.depend()
     return @array
 
-  # Removes items from the array based either on a value or an evaluation function and returns a Javascript array containing the removed items or null if no items have been removed.
+  # Removes items from the array based either on a value or on an evaluation function and returns a Javascript array containing the removed items or null if no items have been removed.
   remove: (valueOrFn) ->
     ret = []
     fn = if valueOrFn instanceof Function then valueOrFn else (value) -> value is valueOrFn
@@ -85,17 +108,10 @@ class ReactiveArray
         ret
     )(method)
 
-  # Makes the array accessor methods available and reactive.
-  for method in ACCESSOR_METHODS
+  # Makes the array's other methods available and reactive.
+  for method in OTHER_METHODS
     if Array::[method] instanceof Function then ((method_name) ->
       ReactiveArray::[method_name] = ->
         @__dep.depend()
-        Array::[method_name].apply @array, arguments
-    )(method)
-
-  # Makes the array iteration methods available.
-  for method in ITERATION_METHODS
-    if Array::[method] instanceof Function then ((method_name) ->
-      ReactiveArray::[method_name] = ->
         Array::[method_name].apply @array, arguments
     )(method)

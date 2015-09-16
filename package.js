@@ -1,7 +1,7 @@
 Package.describe({
   name: 'ciclopes:reactive-array',
-  version: '0.0.4',
-  summary: 'Another implementation of ReactiveArray taking into consideration the native array mutator, accessor and iteration methods, making the mutator and accessor ones reactive.',
+  version: '0.0.5',
+  summary: "Another implementation of ReactiveArray taking into consideration the Javascript's native array mutator, accessor and iteration methods, making them reactive.",
   git: 'https://github.com/ciclopes/reactive-array',
   documentation: null
 });
