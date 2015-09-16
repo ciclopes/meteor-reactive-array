@@ -65,7 +65,6 @@ ReactiveArray = (function() {
   };
 
   ReactiveArray.prototype.clear = function() {
-    this.__dep.changed();
     return this.set([]);
   };
 

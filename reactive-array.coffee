@@ -6,6 +6,7 @@ class ReactiveArray
   ITERATION_METHODS = 'forEach every some filter map reduce reduceRight'.split ' '
   REACTIVE_METHODS = MUTATOR_METHODS.concat ACCESSOR_METHODS
 
+  # Override the array's mutator and accessor methods to be reactive.
   __assignReactiveMethods = ->
     self = @
 
@@ -38,13 +39,12 @@ class ReactiveArray
   # Set function.
   set: (value) ->
     # Uses the 'comparator' if it has been defined upon construction.
-    # If the values are equal the variable is not updated.
-    if @comparator and @comparator @array, value
-      return
+    # If the values are equal then the variable is not updated.
+    if @comparator and @comparator @array, value then return
 
     if value instanceof Array then @array = value else @array = [value]
 
-    # Override the array's modifiers functions to be reactive (default behaviour) if desired upon construction.
+    # Override the array's mutator and accessor methods to be reactive if desired upon construction (default behaviour).
     if @__reactive_array then __assignReactiveMethods.call @
     @__dep.changed()
     return
@@ -55,7 +55,6 @@ class ReactiveArray
     return @array
 
   clear: ->
-    @__dep.changed()
     @set []
 
   toString: ->
