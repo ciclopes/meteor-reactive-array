@@ -46,24 +46,24 @@ ReactiveArray = (function() {
     }
   };
 
-  function ReactiveArray(initValue, comparator, makeArrayObjReactive) {
+  function ReactiveArray(initValue, equalsEvaluatorFunction, makeArrayObjReactive) {
     if (!(this instanceof ReactiveArray)) {
-      return new ReactiveArray(initValue, comparator, makeArrayObjReactive);
+      return new ReactiveArray(initValue, equalsEvaluatorFunction, makeArrayObjReactive);
     }
-    if (!(comparator instanceof Function)) {
-      makeArrayObjReactive = comparator;
-      comparator = void 0;
+    if (!(equalsEvaluatorFunction instanceof Function)) {
+      makeArrayObjReactive = equalsEvaluatorFunction;
+      equalsEvaluatorFunction = void 0;
     }
     this.array = void 0;
-    this.comparator = comparator;
+    this.equalsEvaluatorFunction = equalsEvaluatorFunction;
     this.__dep = new Tracker.Dependency;
     this.__reactive_array = makeArrayObjReactive || true;
-    this.set(initValue);
+    this.set(initValue || []);
     return;
   }
 
   ReactiveArray.prototype.set = function(value) {
-    if (this.comparator && this.comparator(this.array, value)) {
+    if (this.equalsEvaluatorFunction && this.equalsEvaluatorFunction(this.array, value)) {
       return;
     }
     if (value instanceof Array) {

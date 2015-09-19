@@ -40,30 +40,30 @@ class ReactiveArray
       )(method)
     return
 
-  constructor: (initValue, comparator, makeArrayObjReactive) ->
+  constructor: (initValue, equalsEvaluatorFunction, makeArrayObjReactive) ->
     # If the constructor has not been called with the keyword 'new', create a new instance and return it.
-    if not (@ instanceof ReactiveArray) then return new ReactiveArray initValue, comparator, makeArrayObjReactive
+    if not (@ instanceof ReactiveArray) then return new ReactiveArray initValue, equalsEvaluatorFunction, makeArrayObjReactive
     
-    # Ommited 'comparator' argument.
-    if not (comparator instanceof Function)
-      makeArrayObjReactive = comparator
-      comparator = undefined
+    # Ommited 'equalsEvaluatorFunction' argument.
+    if not (equalsEvaluatorFunction instanceof Function)
+      makeArrayObjReactive = equalsEvaluatorFunction
+      equalsEvaluatorFunction = undefined
 
     # Set instance specific variables.
     @array = undefined
-    @comparator = comparator
+    @equalsEvaluatorFunction = equalsEvaluatorFunction
     @__dep = new Tracker.Dependency
     @__reactive_array = makeArrayObjReactive || true
 
     # Set initial value.
-    @set initValue
+    @set initValue or []
     return
 
   # Set function.
   set: (value) ->
-    # Uses the 'comparator' if it has been defined upon construction.
+    # Uses the 'equalsEvaluatorFunction' if it has been defined upon construction.
     # If the values are equal then the variable is not updated.
-    if @comparator and @comparator @array, value then return
+    if @equalsEvaluatorFunction and @equalsEvaluatorFunction @array, value then return
 
     if value instanceof Array then @array = value else @array = [value]
 
