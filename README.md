@@ -22,7 +22,7 @@ Just assign a new instance of ReactiveArray to a variable and you're done.
 
 i.e.: `var reactive_array = new ReactiveArray();`
 
-All array's mutator, accessor and iteration methods (see [reference][1]) are available to all instances of ReactiveArray and they're all reactive. All mutator methods trigger a recomputation of whatever the ReactiveArray instances are being used in.
+ALL ARRAY'S MUTATOR, ACCESSOR AND ITERATION METHODS (SEE [REFERENCE][1]) ARE AVAILABLE TO ALL INSTANCES OF REACTIVEARRAY AND THEY'RE ALL REACTIVE. ALL MUTATOR METHODS TRIGGER A RECOMPUTATION OF WHATEVER THE REACTIVEARRAY INSTANCES ARE BEING USED IN.
 
 <a name="important-notes">
 ### Important notes
