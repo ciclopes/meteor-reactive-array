@@ -39,7 +39,7 @@ The ReactiveArray instances are not array-like objects. Therefore, they cannot b
 **initialValue: Array**
 The array's initial value. Becomes the ReactiveArray instance's built-in array object.
 
-**initialValue: [Anything] (2)**
+**initialValue: [Anything]** **(2)**
 The array's initial value. Is wrapped inside a Javascript regular array and becomes the ReactiveArray instance's built-in array object.
 Default: `[]`
 
@@ -62,7 +62,7 @@ Uses the `equalsFunction` (see [Constructor](#methods-constructor)) as equality 
 **value: Array**
 Becomes the instance's built-in array object.
 
-**value: [Anything] (2)**
+**value: [Anything]** **(2)**
 Is wrapped inside a regular Javascript array and becomes the instance's array object.
 
 **Caution**
@@ -87,7 +87,7 @@ Returns a regular Javascript array containing all removed elements evalueated by
 
 Evaluation function that returns a truthy value meaning that `element` should be removed or a falsy value otherwise.
 
-**valueOrEvaluationFunction: [Anything] (2)**
+**valueOrEvaluationFunction: [Anything]** **(2)**
 
 A value that is wrapped in a strict equality evaluation function to evaluate which elements of the array should be removed.
 
