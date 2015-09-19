@@ -39,7 +39,7 @@ The ReactiveArray instances are not array-like objects. Therefore, they cannot b
 **initialValue: Array**
 The array's initial value. Becomes the ReactiveArray instance's built-in array object.
 
-**initialValue: [Anything]** (2)
+**initialValue: [Anything] (2)**
 The array's initial value. Is wrapped inside a Javascript regular array and becomes the ReactiveArray instance's built-in array object.
 Default: `[]`
 
@@ -54,7 +54,7 @@ When this argument is set to `true` (which is default), the built-in array objec
 
 <a name="methods-set">
 #### Set:
-`reactive_array_var.set(value);`
+`reactive_array.set(value);`
 
 Sets the built-in array object contained inside the ReactiveArray instance.
 Uses the `equalsFunction` (see [Constructor](#methods-constructor)) as equality evaluator to decide wether or not to update the variable. If `equalsFunction` returns a falsy value, which means the old and new values are _DIFFERENT_, then the variable _IS_ updated. Otherwise, there is no update.
@@ -62,7 +62,7 @@ Uses the `equalsFunction` (see [Constructor](#methods-constructor)) as equality 
 **value: Array**
 Becomes the instance's built-in array object.
 
-**value: [Anything]** (2)
+**value: [Anything] (2)**
 Is wrapped inside a regular Javascript array and becomes the instance's array object.
 
 **Caution**
@@ -73,13 +73,13 @@ Calling this method with no argument will cause `value` to be considered `undefi
 
 <a name="methods-get">
 #### Get:
-`reactive_array_var.get() -> Array`
+`reactive_array.get() -> Array`
 
 Returns the built-in array object contained inside the ReactiveArray instance. If defined upon the ReactiveArray instance creation, this array may be reactive (see [Constructor](#methods-constructor)).
 
 <a name="methods-remove">
 #### Remove:
-`reactive_array_var.remove(valueOrEvaluationFunction) -> Array`
+`reactive_array.remove(valueOrEvaluationFunction) -> Array`
 
 Returns a regular Javascript array containing all removed elements evalueated by `valueOrEvaluationFunction` as truthy, if `valueOrEvaluationFunction` is a function, or strictly equal to `valueOrEvaluationFunction` otherwise.
 
@@ -87,13 +87,13 @@ Returns a regular Javascript array containing all removed elements evalueated by
 
 Evaluation function that returns a truthy value meaning that `element` should be removed or a falsy value otherwise.
 
-**valueOrEvaluationFunction: [Anything]** (2)
+**valueOrEvaluationFunction: [Anything] (2)**
 
 A value that is wrapped in a strict equality evaluation function to evaluate which elements of the array should be removed.
 
 <a name="methods-clear">
 #### Clear:
-`reactive_array_var.clear()`
+`reactive_array.clear()`
 
 Clears the instance's built-in array object. It's a shorthand of `set([])`.
 
