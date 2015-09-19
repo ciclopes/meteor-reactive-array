@@ -38,6 +38,9 @@ class ReactiveArray
         self.array[method_name] = ->
           ReactiveArray::[method_name].apply self, arguments
       )(method)
+
+    @array.getLength = ->
+      ReactiveArray::getLength.call self
     return
 
   constructor: (initValue, equalsEvaluatorFunction, makeArrayObjReactive) ->
@@ -97,7 +100,12 @@ class ReactiveArray
   # ToString function.
   toString: ->
     @__dep.depend()
-    return "ReactiveArray{ #{@array} }"
+    "ReactiveArray{ #{@array} }"
+
+  # A reactive function that returns the length of the array.
+  getLength: ->
+    @__dep.depend()
+    @array.length
 
   # Makes the array mutator methods available and reactive.
   for method in MUTATOR_METHODS

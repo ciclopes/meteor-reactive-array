@@ -44,6 +44,9 @@ ReactiveArray = (function() {
         })(method);
       }
     }
+    this.array.getLength = function() {
+      return ReactiveArray.prototype.getLength.call(self);
+    };
   };
 
   function ReactiveArray(initValue, equalsEvaluatorFunction, makeArrayObjReactive) {
@@ -109,6 +112,11 @@ ReactiveArray = (function() {
   ReactiveArray.prototype.toString = function() {
     this.__dep.depend();
     return "ReactiveArray{ " + this.array + " }";
+  };
+
+  ReactiveArray.prototype.getLength = function() {
+    this.__dep.depend();
+    return this.array.length;
   };
 
   for (j = 0, len = MUTATOR_METHODS.length; j < len; j++) {
