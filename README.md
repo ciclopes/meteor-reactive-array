@@ -27,7 +27,7 @@ ALL ARRAY'S MUTATOR, ACCESSOR AND ITERATION METHODS (SEE [REFERENCE][1]) ARE AVA
 <a name="important-notes">
 ### Important notes
 
-The ReactiveArray instances are not array-like objects. Therefore, they cannot be called within `Array.prototype.[any_method].call` nor `Array.prototype.[any_method].apply` as the context (`this` variable). What _CAN_ be used as the context in such cases is the array returned by the `get()` method, _BUT_ these calls will not be reactive.
+The ReactiveArray instances are not array-like objects. Therefore, they cannot be called within `Array.prototype.[any_method].call` nor `Array.prototype.[any_method].apply` as the context (`this` variable). What _CAN_ be used as the context in such cases is the instance's built-in array object, retrieved through [Get](#methods-get), _BUT_ these calls will not be reactive.
 
 <a name="methods">
 ### Methods
@@ -50,7 +50,7 @@ By default this method just returns `false` (given `newValue` is an object and i
 
 **makeArrayObjectReactive: Boolean**
 As seen in [Important notes](#important-notes), the ReactiveArray instances are not array-like objects, but _THEY HAVE_ a built-in array that is returned by [Get](#methods-get).
-When this argument is set to `true` (which is default), the array object returned by `get()` becomes reactive. If set to `false`, the returned array will be just a regular non-reactive Javascript array.
+When this argument is set to `true` (which is default), the built-in array object becomes reactive. If set to `false`, the built-in array will be just a regular non-reactive Javascript array.
 
 <a name="methods-set">
 #### Set:
