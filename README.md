@@ -46,7 +46,7 @@ Default: `[]`
 **equalsFunction: Function(oldValue: Array, newValue: Object) -> Boolean**
 A function that receives the arguments `oldValue` and `newValue` and evaluates their equality.
 When set, this function will be called inside [Set](#methods-set).
-By default this method just returns `false` (given `newValue` is an object and it may just be `oldValue` mutated), forcing the variable to always be updated.
+By default this method just returns `false` (given `newValue` is an object and it may just be `oldValue` mutated), forcing the variable to always be updated on every `set(newValue)` call.
 
 **makeArrayObjectReactive: Boolean**
 As seen in [Important notes](#important-notes), the ReactiveArray instances are not array-like objects, but _THEY HAVE_ a built-in array that is returned by [Get](#methods-get).
