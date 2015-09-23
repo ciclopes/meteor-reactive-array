@@ -1,6 +1,6 @@
 Package.describe({
   name: 'ciclopes:reactive-array',
-  version: '0.0.8',
+  version: '0.0.9',
   summary: "Provides a truly reactive ReactiveArray.",
   git: 'https://github.com/ciclopes/meteor-reactive-array.git',
   documentation: 'README.md'
