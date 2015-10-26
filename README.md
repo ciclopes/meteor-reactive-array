@@ -1,7 +1,7 @@
 meteor-reactive-array
 =====================
 
-Another implementation of ReactiveArray package for Meteor, taking into consideration the Javascript's native array mutator, accessor and iteration methods, making them reactive.
+Meteor's best ReactiveArray package, taking into consideration the Javascript's native array mutator, accessor and iteration methods, making them reactive.
 
 <a name="toc"></a>
 ### Table of Contents
@@ -63,7 +63,7 @@ ALL ARRAY'S MUTATOR, ACCESSOR AND ITERATION METHODS (SEE [REFERENCE][1]) **ARE A
 <a name="important-notes"></a>
 ### Important notes
 
-The ReactiveArray instances are not array-like objects. Therefore, they cannot be called within `Array.prototype.[any_method].call` nor `Array.prototype.[any_method].apply` as the context (`this` variable). What _CAN_ be used as the context in such cases is the instance's built-in array object, retrieved through [Get](#methods-get), _BUT_ these calls _WILL NOT BE REACTIVE_.
+The ReactiveArray instances are not array-like objects. Therefore, they cannot be called within `Array.prototype.[any_method].call` nor `Array.prototype.[any_method].apply` as the context. What _CAN_ be used as the context in such cases is the instance's built-in array object, retrieved through [Get](#methods-get), _BUT_ these calls _WILL NOT BE REACTIVE_.
 
 <a name="methods"></a>
 ### Methods
@@ -74,9 +74,9 @@ The ReactiveArray instances are not array-like objects. Therefore, they cannot b
 `ReactiveArray(initialValue, equalsFunction, makeArrayObjectReactive) -> Object`
 
 * `initialValue: Array` The array's initial value. Becomes the ReactiveArray instance's built-in array object.
-* `initialValue: [Anything] (2)` The array's initial value. Is wrapped inside a Javascript regular array and becomes the ReactiveArray instance's built-in array object. Default: `[]`
-* `equalsFunction: Function(oldValue: Array, newValue: [Anything]) -> Boolean` A function that receives the arguments `oldValue` and `newValue` and evaluates their equality. When set, this function will be called inside [Set](#methods-set). By default this method just returns `false` (given `newValue` may just be `oldValue` mutated), forcing the variable to always be updated on every `set(newValue)` call.
-* `makeArrayObjectReactive: Boolean` As seen in [Important notes](#important-notes), the ReactiveArray instances are not array-like objects, but _THEY HAVE_ a built-in array that is returned by [Get](#methods-get). When this argument is set to `true` (which is default), the built-in array object becomes reactive. If set to `false`, the built-in array will be just a regular non-reactive Javascript array.
+* `initialValue: Anything (2)` The array's initial value. It's wrapped inside a Javascript regular array and becomes the ReactiveArray instance's built-in array object. Default: `[]`
+* `equalsFunction: Function(oldValue: Array, newValue: Anything) -> Boolean` A function that receives the arguments `oldValue` and `newValue` and evaluates their equality. When set, this function will be called inside [Set](#methods-set). By default this method just returns `false` (given `newValue` may just be `oldValue` mutated), forcing the variable to always be updated on every `set(newValue)` call.
+* `makeArrayObjectReactive: Boolean` As seen in [Important notes](#important-notes), the ReactiveArray instances are not array-like objects, but _THEY HAVE_ a built-in array that is returned by [Get](#methods-get). When this argument is set to `true` (which is default), the built-in array object becomes reactive as well. If set to `false`, the built-in array will be just a regular non-reactive Javascript array.
 
 <a name="methods-set"></a>
 #### Set:
@@ -87,7 +87,7 @@ Sets the built-in array object contained inside the ReactiveArray instance.
 Uses the `equalsFunction` (see [Constructor](#methods-constructor)) as equality evaluator to decide wether or not to update the variable. If `equalsFunction` returns a falsy value, which means the old and new values are _DIFFERENT_, then the variable _IS_ updated. Otherwise, there is no update.
 
 * `value: Array` Becomes the instance's built-in array object.
-* `value: [Anything] (2)` Is wrapped inside a regular Javascript array and becomes the instance's array object.
+* `value: Anything (2)` It's wrapped inside a regular Javascript array and becomes the instance's array object.
 
 **Caution**
 This method will make the newly set array to be reactive, if defined upon the ReactiveArray instance creation (see [Constructor](#methods-constructor)).
@@ -109,8 +109,8 @@ Returns the built-in array object contained inside the ReactiveArray instance. I
 
 Returns a regular non-reactive Javascript array containing all removed elements evalueated by `valueOrEvaluationFunction` as truthy, if `valueOrEvaluationFunction` is a function, or strictly equal to `valueOrEvaluationFunction` otherwise.
 
-* `valueOrEvaluationFunction: Function(element: [Anything]) -> Boolean` Evaluation function that returns a truthy value meaning that `element` should be removed or a falsy value otherwise.
-* `valueOrEvaluationFunction: [Anything] (2)` A value that is wrapped in a strict equality evaluation function to evaluate which elements of the array should be removed.
+* `valueOrEvaluationFunction: Function(element: Anything) -> Boolean` Evaluation function that returns a truthy value meaning that `element` should be removed or a falsy value otherwise.
+* `valueOrEvaluationFunction: Anything (2)` A value that is wrapped in a strict equality function to evaluate which elements of the array should be removed.
 
 e.g.:
 ```
@@ -124,7 +124,7 @@ removed_elements = reactive_array.remove( function(element) {
 
 removed_elements = reactive_array.remove(2)
 
-// from this point, it's easy to make 'removed_elements' reactive
+// from this point, it's easy to make 'removed_elements' a reactive source
 
 removed_elements = new ReactiveArray(removed_elements)
 ```
